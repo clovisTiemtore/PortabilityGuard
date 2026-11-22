@@ -1,1 +1,1 @@
-"""Static analysis tools for cross-platform Python code."""
+"""Static analysis tools for identifying portability issues in Python code."""
