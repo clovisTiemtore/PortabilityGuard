@@ -4,7 +4,7 @@
 
 ## Description
 
-**PortabilityGuard** est une bibliothèque d'analyse statique conçue pour aider les développeurs à identifier les problèmes de portabilité entre systèmes d'exploitation (Linux, Windows, macOS) directement dans leur code source. 
+**PortabilityGuard** est une bibliothèque d'analyse statique conçue pour aider les développeurs à identifier les problèmes de portabilité entre systèmes d'exploitation (Linux, Windows, macOS) directement dans leur code source.
 
 Ce projet est développé dans le cadre d'un cursus en école d'ingénieur (ENSISA).
 
