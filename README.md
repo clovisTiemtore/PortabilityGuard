@@ -12,6 +12,25 @@ Ce projet est développé dans le cadre d'un cursus en école d'ingénieur (ENSI
 
 - **Détection des chemins codés en dur** : Repérage des chemins absolus spécifiques à un OS (`/home/...` ou `C:\...`) qui cassent la compatibilité multi-plateforme.
 
+### Détection des chemins absolus
+
+La fonction `find_absolute_paths` analyse du code Python sans l'exécuter et
+retourne chaque littéral représentant un chemin absolu avec son numéro de ligne :
+
+```python
+from portabilityguard.path_detector import find_absolute_paths
+
+source = 'config = "/home/alice/project/config.json"'
+find_absolute_paths(source)
+# [(1, "/home/alice/project/config.json")]
+```
+
+La règle reconnaît les chemins POSIX et Windows quel que soit le système sur
+lequel PortabilityGuard est exécuté. Elle examine tous les littéraux de type
+chaîne, sans déterminer s'ils sont réellement utilisés pour accéder à un
+fichier. Elle ne résout pas les chemins construits dynamiquement, par exemple
+par concaténation ou interpolation.
+
 ## Installation
 
 Clone le dépôt et installe le projet en mode développement (avec les outils de test et de lintage) :
@@ -29,14 +48,18 @@ pip install -e ".[dev]"
 ```
 
 ## Utilisation et Tests
+
 Pour lancer la suite de tests unitaires et mesurer la couverture de code :
-```
+
+```bash
 pytest
 ```
 
 ## Auteurs
+
 - [Clovis Tiemtoré](https://github.com/clovisTiemtore)
 - [Erwan Vangu](https://github.com/erwan75019)
 
 ## Licence
+
 Distribué sous la licence [MIT](LICENSE).
