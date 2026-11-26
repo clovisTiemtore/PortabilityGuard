@@ -11,6 +11,8 @@ Ce projet est développé dans le cadre d'un cursus en école d'ingénieur (ENSI
 ## Fonctionnalités actuelles
 
 - **Détection des chemins codés en dur** : Repérage des chemins absolus spécifiques à un OS (`/home/...` ou `C:\...`) qui cassent la compatibilité multi-plateforme.
+- **Détection des encodages manquants** : Repérage des appels à `open()` en
+  mode texte qui dépendent de l'encodage par défaut du système.
 
 ### Détection des chemins absolus
 
@@ -30,6 +32,37 @@ lequel PortabilityGuard est exécuté. Elle examine tous les littéraux de type
 chaîne, sans déterminer s'ils sont réellement utilisés pour accéder à un
 fichier. Elle ne résout pas les chemins construits dynamiquement, par exemple
 par concaténation ou interpolation.
+
+### Détection des encodages manquants
+
+La fonction `find_missing_encodings` analyse les appels directs à `open()` et
+retourne le numéro de ligne ainsi qu'un message pour chaque ouverture en mode
+texte sans encodage explicite :
+
+```python
+from portabilityguard.encoding_detector import find_missing_encodings
+
+source = '''
+open("report.txt", "w")
+open("data.bin", "rb")
+open("config.txt", encoding="utf-8")
+'''
+find_missing_encodings(source)
+# [(2, "open() uses text mode without an explicit encoding; results may vary across platforms.")]
+```
+
+Le mode par défaut et les modes texte `r`, `w`, `a` et `x` sont contrôlés. Les
+modes binaires tels que `rb` ou `wb` sont ignorés, car ils n'acceptent pas
+d'encodage. Les arguments peuvent être positionnels ou nommés, y compris
+l'encodage passé comme quatrième argument positionnel. La valeur `None`,
+qu'elle soit nommée ou positionnelle, sélectionne toujours l'encodage par
+défaut du système et est donc signalée comme manquante.
+
+L'analyse repose uniquement sur l'AST et n'exécute jamais le code. Pour éviter
+les faux positifs, elle ignore les modes calculés dynamiquement et les appels
+utilisant `*args` ou `**kwargs`. Elle cible la forme directe `open(...)` : elle
+ne résout pas les alias, les redéfinitions locales du nom `open` ou les méthodes
+comme `Path.open()`.
 
 ## Installation
 
