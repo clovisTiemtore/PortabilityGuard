@@ -54,7 +54,9 @@ find_missing_encodings(source)
 Le mode par défaut et les modes texte `r`, `w`, `a` et `x` sont contrôlés. Les
 modes binaires tels que `rb` ou `wb` sont ignorés, car ils n'acceptent pas
 d'encodage. Les arguments peuvent être positionnels ou nommés, y compris
-l'encodage passé comme quatrième argument positionnel.
+l'encodage passé comme quatrième argument positionnel. La valeur `None`,
+qu'elle soit nommée ou positionnelle, sélectionne toujours l'encodage par
+défaut du système et est donc signalée comme manquante.
 
 L'analyse repose uniquement sur l'AST et n'exécute jamais le code. Pour éviter
 les faux positifs, elle ignore les modes calculés dynamiquement et les appels

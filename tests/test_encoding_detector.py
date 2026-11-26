@@ -40,6 +40,12 @@ def test_find_missing_encodings_ignores_binary_keyword_mode() -> None:
     assert find_missing_encodings(source) == []
 
 
+def test_find_missing_encodings_ignores_binary_mode_with_none_encoding() -> None:
+    source = 'open("file.bin", "rb", encoding=None)\n'
+
+    assert find_missing_encodings(source) == []
+
+
 @pytest.mark.parametrize(
     "source",
     [
@@ -51,6 +57,18 @@ def test_find_missing_encodings_ignores_binary_keyword_mode() -> None:
 )
 def test_find_missing_encodings_ignores_explicit_encoding(source: str) -> None:
     assert find_missing_encodings(source) == []
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        'open("file.txt", encoding=None)\n',
+        'open("file.txt", "w", encoding=None)\n',
+        'open("file.txt", "r", -1, None)\n',
+    ],
+)
+def test_find_missing_encodings_detects_none_encoding(source: str) -> None:
+    assert find_missing_encodings(source) == [(1, MISSING_ENCODING_MESSAGE)]
 
 
 def test_find_missing_encodings_returns_multiple_findings_and_line_numbers() -> None:

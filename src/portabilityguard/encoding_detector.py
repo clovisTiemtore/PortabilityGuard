@@ -36,9 +36,17 @@ def _has_file_argument(node: ast.Call) -> bool:
 
 
 def _has_explicit_encoding(node: ast.Call) -> bool:
-    """Return whether *node* supplies the ``encoding`` parameter."""
-    return len(node.args) >= 4 or any(
-        keyword.arg == "encoding" for keyword in node.keywords
+    """Return whether *node* supplies an encoding other than literal ``None``."""
+    encoding_arguments = []
+    if len(node.args) >= 4:
+        encoding_arguments.append(node.args[3])
+    encoding_arguments.extend(
+        keyword.value for keyword in node.keywords if keyword.arg == "encoding"
+    )
+
+    return any(
+        not isinstance(argument, ast.Constant) or argument.value is not None
+        for argument in encoding_arguments
     )
 
 
