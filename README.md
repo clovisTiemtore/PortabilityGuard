@@ -1,3 +1,4 @@
+
 # PortabilityGuard
 
 > A static analysis library to detect cross-platform compatibility issues in Python code.
@@ -11,8 +12,8 @@ Ce projet est développé dans le cadre d'un cursus en école d'ingénieur (ENSI
 ## Fonctionnalités actuelles
 
 - **Détection des chemins codés en dur** : Repérage des chemins absolus spécifiques à un OS (`/home/...` ou `C:\...`) qui cassent la compatibilité multi-plateforme.
-- **Détection des encodages manquants** : Repérage des appels à `open()` en
-  mode texte qui dépendent de l'encodage par défaut du système.
+- **Détection des encodages manquants** : Repérage des appels à `open()` en mode texte qui dépendent de l'encodage par défaut du système.
+- **Détection des variables d'environnement propres à Windows** : Repérage des accès directs à `APPDATA` et `LOCALAPPDATA`.
 
 ### Détection des chemins absolus
 
@@ -63,6 +64,26 @@ les faux positifs, elle ignore les modes calculés dynamiquement et les appels
 utilisant `*args` ou `**kwargs`. Elle cible la forme directe `open(...)` : elle
 ne résout pas les alias, les redéfinitions locales du nom `open` ou les méthodes
 comme `Path.open()`.
+
+### Détection des accès aux variables d'environnement propres à Windows
+
+La fonction `find_platform_specific_env_vars` repère les lectures directes de
+`APPDATA` et `LOCALAPPDATA` via `os.environ[...]`. Ces accès peuvent lever une
+`KeyError` si la variable est absente. L'analyse est statique et fonctionne sur
+tous les systèmes.
+
+```python
+from portabilityguard.env_detector import find_platform_specific_env_vars
+
+source = 'import os\ncache = os.environ["APPDATA"]'
+find_platform_specific_env_vars(source)
+# [(2, "APPDATA")]
+```
+
+Chaque résultat contient le numéro de ligne et le nom de la variable. La règle
+reconnaît la syntaxe littérale `os.environ[...]` et ignore les appels à
+`os.environ.get()`. La résolution des alias, des noms réaffectés et des clés
+calculées est hors périmètre.
 
 ## Installation
 
